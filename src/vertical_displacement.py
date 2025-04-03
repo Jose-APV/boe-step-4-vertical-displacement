@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -79,3 +80,23 @@ def compute_vertical_displacement(predicted_path, dem_path, csv_path, output_csv
 
     print(f"Processed {len(displacements)} cracks.")
     print(f"Saved vertical displacement data to {output_csv}")
+
+
+def vertical_displacement_looping(seg_folder, dem_folder, csv_folder, output_folder):
+    # Ensure the output folder exists
+    os.makedirs(output_folder, exist_ok=True)
+
+    # Loop through all segmentation images
+    for seg_filename in sorted(os.listdir(seg_folder)):
+        if seg_filename.endswith("SEG.jpg"):
+            seg_path = os.path.join(seg_folder, seg_filename)
+
+            # Generate corresponding file paths
+            dem_path = os.path.join(dem_folder, seg_filename.replace("SEG.jpg", "DEM.jpg"))
+            csv_path = os.path.join(csv_folder, seg_filename.replace("SEG.jpg", "MASK.csv"))
+            output_csv = os.path.join(output_folder, seg_filename.replace("SEG.jpg", "VERT_DISP.csv"))
+
+            # Compute vertical displacement
+            compute_vertical_displacement(seg_path, dem_path, csv_path, output_csv)
+
+            print(f"Processed: {seg_filename} → {output_csv}")

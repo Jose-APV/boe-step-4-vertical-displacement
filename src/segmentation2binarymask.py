@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from PIL import Image
 import csv
@@ -24,3 +25,18 @@ def image_to_csv(image_path, output_csv):
             writer.writerow(row)
     
     print(f"CSV file saved: {output_csv}")
+
+def convert_all_masks(predicted_output_folder, binary_mask_csv_folder):
+    """Convert all segmentation masks (SEG.png) into CSV binary masks (MASK.csv)."""
+    os.makedirs(binary_mask_csv_folder, exist_ok=True)
+
+    all_predicted_masks = sorted([f for f in os.listdir(predicted_output_folder) if f.endswith("SEG.jpg")])
+
+    for mask_filename in all_predicted_masks:
+        mask_path = os.path.join(predicted_output_folder, mask_filename)
+
+        # Naming: SEG.png → MASK.csv
+        csv_filename = mask_filename.replace("SEG.jpg", "MASK.csv")
+        csv_output_path = os.path.join(binary_mask_csv_folder, csv_filename)
+
+        image_to_csv(mask_path, csv_output_path)
