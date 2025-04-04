@@ -46,7 +46,7 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
 
         if not displacement_row.empty:
             displacement = displacement_row['vertical_displacement'].values[0]
-            if displacement >= 0.001:
+            if displacement >= 0.003:
                 centroid_y = np.mean(crack_positions[:, 0])
                 centroid_x = np.mean(crack_positions[:, 1])
                 plt.text(centroid_x, centroid_y, f"{displacement:.3f}m", color='red', fontsize=25, ha='center')
