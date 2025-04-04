@@ -10,6 +10,22 @@ from resize_dem_and_ortho import split_dem_image
 from resize_dem_and_ortho import split_testing_images
 from reassemble_labeledRGB_images import reassemble_image
 
+from PIL import Image
+import os
+
+from PIL import Image
+import os
+
+def get_image_dimensions(image_path):
+    # Open the image to get its dimensions
+    try:
+        with Image.open(image_path) as img:
+            width, height = img.size
+        return width, height
+    except Exception as e:
+        print(f"Error opening image: {e}")
+        return None, None
+
 
 def main(sidewalk_name):
     # Necessary Paths
@@ -29,7 +45,7 @@ def main(sidewalk_name):
     sidewalk_output_folder_rgb = sidewalk_path + "/resized_rgb/" # for rgb
     sidewalk_output_folder_dem = sidewalk_path + "/resized_dem/" # for dem
 
-    pretrained_model_path = '../src/unet_membrane.hdf5'
+    pretrained_model_path = '../unet_membrane.hdf5'
 
     # loop through rgb and dem images, name them by 12345
     resized_rgb_path = sidewalk_output_folder_rgb
@@ -68,8 +84,14 @@ def main(sidewalk_name):
     # should visualize all images and stick them togther
     visualize_looping(resized_rgb_path, binary_mask_csv_path, vertical_displacement_csv, results_path)
 
-    # reassemble_image(labeled_rgb_with_measurements_path, results_path, 1261, 284)
+
+    # Example usage
+    image_path = sidewalk_path + "/" + sidewalk_name + "RGB.jpg"  # Replace with your specific image file path
+    width, height = get_image_dimensions(image_path)
+    print(f"Width: {width}, Height: {height}")
+    reassemble_image(labeled_rgb_with_measurements_path, results_path, width, height)
     
+
 if __name__ == "__main__":
     base_path = "/Users/jose/pointcloud_files/Demo/"
 

@@ -4,12 +4,12 @@ from PIL import Image
 import math
 from natsort import natsorted  # Ensures correct numeric sorting
 
-def reassemble_image(labeled_rgb_with_measurements_path, results_path, original_width, original_height, tile_size=256):
+def reassemble_image(tiles_folder, output_folder, original_width, original_height, tile_size=256):
     """
-    Reassembles 197x197 tiles into the full sidewalk orthoimage.
+    Reassembles 256x256 tiles into the full sidewalk orthoimage.
     """
     # Get all tile filenames matching the prefix
-    tile_filenames = [f for f in os.listdir(labeled_rgb_with_measurements_path) if f.endswith(('.png', '.jpg'))]
+    tile_filenames = [f for f in os.listdir(tiles_folder) if f.endswith(('.png', '.jpg'))]
     tile_filenames = natsorted(tile_filenames)  # Natural sorting to avoid issues
 
     # Compute number of rows & columns, rounding up to include edge patches
@@ -34,7 +34,7 @@ def reassemble_image(labeled_rgb_with_measurements_path, results_path, original_
                 print(f"Missing tile at row {row}, col {col} (index {tile_index})")
                 continue  # Avoid out-of-bounds errors
 
-            tile_path = os.path.join(labeled_rgb_with_measurements_path, tile_filenames[tile_index])  # Get file path
+            tile_path = os.path.join(tiles_folder, tile_filenames[tile_index])  # Get file path
             
             # Load tile safely
             try:
@@ -42,10 +42,6 @@ def reassemble_image(labeled_rgb_with_measurements_path, results_path, original_
             except Exception as e:
                 print(f"Error loading {tile_path}: {e}")
                 continue
-
-            # Ensure the tile is of size tile_size (197x197)
-            if tile_img.size != (tile_size, tile_size):
-                tile_img = tile_img.resize((tile_size, tile_size), Image.Resampling.LANCZOS)
 
             row_tiles.append(np.array(tile_img))  # Convert to NumPy array
 
@@ -60,11 +56,19 @@ def reassemble_image(labeled_rgb_with_measurements_path, results_path, original_
     # Stack rows vertically to form the final image
     full_image = np.vstack(image_rows)
 
-    # Convert to a PIL image and save
+    # Convert to a PIL image
     final_image = Image.fromarray(full_image)
-    final_image.save(os.path.join(results_path, "reconstructed_image.png"))
 
-    print(f"Reassembled image saved to {os.path.join(results_path, 'reconstructed_image.png')}")
+    # Automatically generate a file name for the output if not provided
+    if not output_folder.lower().endswith(('.png', '.jpg', '.jpeg')):
+        output_folder = os.path.join(output_folder, 'recreated_image.png')  # Default to 'recreated_image.png'
+
+    final_image.save(output_folder)
+
+    print(f"Reassembled image saved to {output_folder}")
+
+
+
 
 
 
