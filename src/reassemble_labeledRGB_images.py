@@ -7,6 +7,10 @@ from natsort import natsorted  # Ensures correct numeric sorting
 def reassemble_image(tiles_folder, output_folder, original_width, original_height, tile_size=256):
     """
     Reassembles 256x256 tiles into the full sidewalk orthoimage.
+    This algorithm will take the labeled_rgb_path which is the folder path that contains all the rgb images that have been 
+    labeled with measurements. This path is in the results folder.
+    The original width and height of the original path is automatically passed in.
+    Tile size is always 256 because labeled images are 256x256
     """
     # Get all tile filenames matching the prefix
     tile_filenames = [f for f in os.listdir(tiles_folder) if f.endswith(('.png', '.jpg'))]
@@ -71,9 +75,3 @@ def reassemble_image(tiles_folder, output_folder, original_width, original_heigh
 
 
 
-
-    """
-    This algorithm will take the labeled_rgb_path which is the folder path that contains all the rgb images that have been 
-    labeled with measurements. This path is in the results folder.
-    Output
-    """
