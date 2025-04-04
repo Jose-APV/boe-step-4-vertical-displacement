@@ -46,10 +46,10 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
 
         if not displacement_row.empty:
             displacement = displacement_row['vertical_displacement'].values[0]
-            centroid_y = np.mean(crack_positions[:, 0])
-            centroid_x = np.mean(crack_positions[:, 1])
-
-            plt.text(centroid_x, centroid_y, f"{displacement:.3f}m", color='red', fontsize=12, ha='center')
+            if displacement >= 0.001:
+                centroid_y = np.mean(crack_positions[:, 0])
+                centroid_x = np.mean(crack_positions[:, 1])
+                plt.text(centroid_x, centroid_y, f"{displacement:.3f}m", color='red', fontsize=25, ha='center')
 
     plt.xticks([])
     plt.yticks([])
@@ -73,6 +73,8 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
     os.remove(temp_path)  # Clean up temp file
 
     print(f"Visualization saved: {final_path}")
+
+
 
 def visualize_looping(dem_folder, csv_folder, displacement_folder, results_folder):
     """Loops through all displacement CSV files and visualizes vertical displacement."""
