@@ -62,15 +62,19 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
     plt.savefig(temp_path, dpi=100, bbox_inches='tight', pad_inches=0, transparent=True)
     plt.close()
 
-    # Load the saved image and process it to 256x256 without white borders
+    # Load the saved image and process it to remove borders
     temp_img = Image.open(temp_path)
-    temp_img = ImageOps.crop(temp_img)  # Remove excess borders
+
+    # Crop off any potential border (if necessary)
+    temp_img = ImageOps.crop(temp_img, border=1)  # Adjust this if necessary
+
+    # Resize the image to 256x256
     temp_img = temp_img.resize((256, 256), Image.Resampling.LANCZOS)
 
     # Save the final image
-    final_path = os.path.join(os.path.join(results_path, "labeled_rgb"), f"{base_name}VERT_DISP.png")
+    final_path = os.path.join(results_path, "labeled_rgb", f"{base_name}VERT_DISP.png")
     temp_img.save(final_path)
-    os.remove(temp_path)  # Clean up temp file
+    os.remove(temp_path)  # Clean up the temporary file
 
     print(f"Visualization saved: {final_path}")
 
