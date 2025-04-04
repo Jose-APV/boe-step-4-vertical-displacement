@@ -65,16 +65,28 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
             centroid_x = np.mean(crack_positions[:, 1])
 
             plt.text(centroid_x, centroid_y, f"{displacement:.3f}m", color='red', fontsize=12, ha='center')
+    
+    
+    # Remove ticks, labels, and color bar
+    plt.xticks([])  # Remove x-axis ticks
+    plt.yticks([])  # Remove y-axis ticks
+    plt.xlabel('')  # Remove x-axis label
+    plt.ylabel('')  # Remove y-axis label
+    plt.legend().set_visible(False)  # Remove legend
 
+    # Save visualization image with unique name
+    # we do this before adding title and labels because we want to save the pure image
+    # image saved should be 256x256
+    plt.gcf().set_size_inches(2.56, 2.56)  # Resize figure
+    plt.savefig(f"{results_path}/labeled_rgb/{base_name}VERT_DISP.png", dpi=100, bbox_inches='tight', pad_inches=0) # save image into results/labeled_rgb folder
+    output_image_path = os.path.join(results_path, f"{base_name}VERT_DISP.png")  
     plt.title(f"Vertical Displacement - {base_name}", fontsize=16)
     plt.xlabel("X-coordinate", fontsize=12)
     plt.ylabel("Y-coordinate", fontsize=12)
     plt.legend(loc='upper right')
     plt.colorbar(label="Elevation (Height)")
 
-    # Save visualization image with unique name
-    output_image_path = os.path.join(results_path, f"{base_name}VERT_DISP.png")  
-    plt.savefig(output_image_path, bbox_inches='tight')  # Save image into results folder
+    
 
     """remove '#' to view the result"""
     #plt.show()

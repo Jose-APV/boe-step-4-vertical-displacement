@@ -8,6 +8,7 @@ from segmentation2binarymask import convert_all_masks, image_to_csv
 from unet import process_segmentation, test_model
 from resize_dem_and_ortho import split_dem_image
 from resize_dem_and_ortho import split_testing_images
+from reassemble_labeledRGB_images import reassemble_image
 
 
 def main(sidewalk_name):
@@ -19,6 +20,8 @@ def main(sidewalk_name):
     # Define the results folder path
     results_path = os.path.join(sidewalk_path, "results")
     os.makedirs(results_path, exist_ok=True)
+    labeled_rgb_with_measurements_path = os.path.join(results_path, "labeled_rgb") # a folder path containing all the cut RGB pictures with elevation measurements edited
+    os.makedirs(labeled_rgb_with_measurements_path, exist_ok=True)
 
     original_dem_path = sidewalk_path + "/" + sidewalk_name +"DEM.jpg"
     original_RGB_path = sidewalk_path + "/" + sidewalk_name +"RGB.jpg"  # Path to the image you want to test
@@ -64,6 +67,8 @@ def main(sidewalk_name):
     # Visualize where the displacement occurs and mark displacement height
     # should visualize all images and stick them togther
     visualize_looping(resized_rgb_path, binary_mask_csv_path, vertical_displacement_csv, results_path)
+
+    reassemble_image(labeled_rgb_with_measurements_path, results_path)
     
 if __name__ == "__main__":
     base_path = "/Users/jose/pointcloud_files/Demo/"
