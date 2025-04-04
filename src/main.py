@@ -68,7 +68,7 @@ def main(sidewalk_name):
     # should visualize all images and stick them togther
     visualize_looping(resized_rgb_path, binary_mask_csv_path, vertical_displacement_csv, results_path)
 
-    reassemble_image(labeled_rgb_with_measurements_path, results_path)
+    # reassemble_image(labeled_rgb_with_measurements_path, results_path, 1261, 284)
     
 if __name__ == "__main__":
     base_path = "/Users/jose/pointcloud_files/Demo/"
