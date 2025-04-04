@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 from PIL import Image
 import os
+import shutil
 
 from vertical_displacement import compute_vertical_displacement, vertical_displacement_looping
 from visualize_results import visualize_looping, visualize_vertical_displacement
@@ -27,10 +28,11 @@ def get_image_dimensions(image_path):
         return None, None
 
 
-def main(sidewalk_name):
+def main(base_path,sidewalk_name):
+    
     # Necessary Paths
     # change this to the desired sidewalk
-    sidewalk_path = "/Users/jose/pointcloud_files/Demo/" + sidewalk_name # make your sidewalk structure similar to this
+    sidewalk_path = os.path.join(base_path, sidewalk_name) # make your sidewalk structure similar to this
 
     # Don't change this
     # Define the results folder path
@@ -39,6 +41,7 @@ def main(sidewalk_name):
     labeled_rgb_with_measurements_path = os.path.join(results_path, "labeled_rgb") # a folder path containing all the cut RGB pictures with elevation measurements edited
     os.makedirs(labeled_rgb_with_measurements_path, exist_ok=True)
 
+    # 2am things
     original_dem_path = sidewalk_path + "/" + sidewalk_name +"DEM.jpg"
     original_RGB_path = sidewalk_path + "/" + sidewalk_name +"RGB.jpg"  # Path to the image you want to test
 
@@ -70,7 +73,7 @@ def main(sidewalk_name):
     # splits the RGB value
     split_testing_images(original_RGB_path, sidewalk_output_folder_rgb)
 
-  
+
     # Have the u-net pre-trained model predict the labeled segmentation
     process_segmentation(pretrained_model_path, sidewalk_output_folder_rgb, img_size, predicted_seg_label_path)
 
@@ -85,15 +88,20 @@ def main(sidewalk_name):
     visualize_looping(resized_rgb_path, binary_mask_csv_path, vertical_displacement_csv, results_path)
 
 
-    # Example usage
     image_path = sidewalk_path + "/" + sidewalk_name + "RGB.jpg"  # Replace with your specific image file path
     width, height = get_image_dimensions(image_path)
     print(f"Width: {width}, Height: {height}")
     reassemble_image(labeled_rgb_with_measurements_path, results_path, width, height)
+    # Move measured sidewalk into a different folder so we don't recalculate in the future
+    
+    measured_sidewalks_folder_path = os.path.dirname(base_path) + "/measured_sidewalks" # remove /demo and append /measured_sidewalks
+    os.makedirs(measured_sidewalks_folder_path, exist_ok=True)
+    shutil.move(sidewalk_path, measured_sidewalks_folder_path)
+    
     
 
 if __name__ == "__main__":
-    base_path = "/Users/jose/pointcloud_files/Demo/"
+    base_path = "/Users/jose/pointcloud_files/Demo" # only change thiss
 
     # Get all folder names inside base_path (only directories)
     all_folders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
@@ -101,7 +109,7 @@ if __name__ == "__main__":
     # Loop through each sidewalk folder and call main with just the folder name
     for folder in all_folders:
         print(f"Found sidewalk: {folder}")  # Debugging output
-        main(folder)
+        main(base_path, folder)
 
 
 
