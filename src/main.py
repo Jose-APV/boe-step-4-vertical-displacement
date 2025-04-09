@@ -99,7 +99,7 @@ def main(base_path,sidewalk_name):
     shutil.move(sidewalk_path, measured_sidewalks_folder_path)
     
     
-
+# Run this entire program by running python main.py 
 if __name__ == "__main__":
     base_path = "/Users/jose/pointcloud_files/Demo" # only change thiss
 

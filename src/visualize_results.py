@@ -49,7 +49,25 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
             if displacement >= 0.003:
                 centroid_y = np.mean(crack_positions[:, 0])
                 centroid_x = np.mean(crack_positions[:, 1])
-                plt.text(centroid_x, centroid_y, f"{displacement*1000:.3f}mm", color='red', fontsize=25, ha='center')
+                dy = crack_positions[-1, 0] - crack_positions[0, 0]
+                dx = crack_positions[-1, 1] - crack_positions[0, 1]
+                angle = np.degrees(np.arctan2(dy, dx))
+
+                # Image dimensions and safe margin
+                img_w, img_h = 256, 256
+                margin = 20
+
+                if centroid_x < margin:
+                    centroid_x = margin
+                elif centroid_x > img_w - margin:
+                    centroid_x = img_w - margin
+
+                if centroid_y < margin:
+                    centroid_y = margin
+                elif centroid_y > img_h - margin:
+                    centroid_y = img_h - margin
+
+                plt.text(centroid_x, centroid_y, f"{displacement*1000:.3f}mm", color='red', fontsize=25, rotation=angle, rotation_mode='anchor', clip_on=True)
 
     plt.xticks([])
     plt.yticks([])
@@ -65,7 +83,7 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
     # Load the saved image and process it to remove borders
     temp_img = Image.open(temp_path)
 
-    # Crop off any potential border (if necessary)
+    # Crop off any potential border \
     temp_img = ImageOps.crop(temp_img, border=1)  # Adjust this if necessary
 
     # Resize the image to 256x256
