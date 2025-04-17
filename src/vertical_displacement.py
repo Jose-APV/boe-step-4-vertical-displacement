@@ -33,6 +33,19 @@ def compute_vertical_displacement(predicted_path, dem_path, csv_path, output_csv
     # Step 1: Use connected component labeling to group adjacent 1s into cracks
     labeled_array, num_features = label(csv_data)  # Find connected regions of 1s (cracks)
 
+    min_pixels = 100 # Remove noise, threshold in pixels
+    filtered_labeled_array = np.zeros_like(labeled_array)
+    new_label = 1
+
+    for crack_label in range(1, num_features + 1):
+        crack_mask = (labeled_array == crack_label)
+        if np.sum(crack_mask) >= min_pixels:
+            filtered_labeled_array[crack_mask] = new_label
+            new_label += 1
+
+    labeled_array = filtered_labeled_array
+    num_features = new_label - 1
+
     # List to store vertical displacement for each crack
     displacements = []
 
