@@ -5,7 +5,7 @@ from scipy.ndimage import label
 from PIL import Image, ImageOps
 import os
 
-def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, results_path, base_name):
+def visualize_vertical_displacement(rgb_path, csv_path, displacement_csv_path, results_path, base_name):
     """
     Visualize cracks in the DEM and display the calculated vertical displacement for each crack.
     - Show cracks as outlined regions.
@@ -13,12 +13,12 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
     """
     os.makedirs(results_path, exist_ok=True)
 
-    if not os.path.exists(dem_path):
-        print(f"Error: DEM file not found: {dem_path}")
+    if not os.path.exists(rgb_path):
+        print(f"Error: DEM file not found: {rgb_path}")
         return
 
-    dem_img = Image.open(dem_path).convert("L")
-    dem_array = np.array(dem_img)
+    rgb_img = Image.open(rgb_path).convert("L")
+    rgb_array = np.array(rgb_img)
 
     if not os.path.exists(csv_path):
         print(f"Error: CSV mask file not found: {csv_path}")
@@ -35,7 +35,7 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
     labeled_array, num_features = label(csv_data)
 
     plt.figure(figsize=(10, 8))
-    plt.imshow(dem_array, cmap="gray", interpolation="none")
+    plt.imshow(rgb_array, cmap="gray", interpolation="none")
 
     for crack_label in range(1, num_features + 1):
         crack_mask = (labeled_array == crack_label)
