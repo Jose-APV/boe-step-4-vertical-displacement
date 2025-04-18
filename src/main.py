@@ -49,7 +49,7 @@ def main(base_path,sidewalk_name):
     sidewalk_output_folder_rgb = sidewalk_path + "/resized_rgb/" # for rgb
     sidewalk_output_folder_dem = sidewalk_path + "/resized_dem/" # for dem
 
-    pretrained_model_path = 'C:/boe-step-4-vertical-displacement/unet_membrane.hdf5'
+    pretrained_model_path = '../unet_membrane.hdf5'
 
     # loop through rgb and dem images, name them by 12345
     resized_rgb_path = sidewalk_output_folder_rgb
@@ -105,7 +105,7 @@ def main(base_path,sidewalk_name):
     
 # Run this entire program by running python main.py 
 if __name__ == "__main__":
-    base_path = "C:/pointcloud_files/Demo" # only change thiss
+    base_path = "/Users/jose/pointcloud_files/Demo" # only change thiss
 
     # Get all folder names inside base_path (only directories)
     all_folders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]

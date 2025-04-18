@@ -47,8 +47,8 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
 
         if not displacement_row.empty:
             displacement = displacement_row['vertical_displacement'].values[0]
-            if displacement >= 0.013:
-                color = 'red'
+            if displacement >= 0.003: # check if we should display it
+                
 
                 centroid_y = np.mean(crack_positions[:, 0])
                 centroid_x = np.mean(crack_positions[:, 1])
@@ -69,10 +69,13 @@ def visualize_vertical_displacement(dem_path, csv_path, displacement_csv_path, r
                     centroid_y = margin
                 elif centroid_y > img_h - margin:
                     centroid_y = img_h - margin
-
-                plt.text(centroid_x, centroid_y, f"{displacement*1000:.3f}mm", color='red', fontsize=25, rotation=angle, rotation_mode='anchor', clip_on=True)
-
-            plt.scatter(crack_positions[:, 1], crack_positions[:, 0], c=color, s=5, label=f"Crack {crack_label}")
+                
+                plt.text(centroid_x, centroid_y, f"{displacement*1000:.3f}mm", color='blue', fontsize=25, rotation=angle, rotation_mode='anchor', clip_on=True)
+            if displacement >= 0.013:
+                plt.scatter(crack_positions[:, 1], crack_positions[:, 0], c='red', s=5, label=f"Crack {crack_label}")
+            elif displacement >= 0.003:
+                plt.scatter(crack_positions[:, 1], crack_positions[:, 0], c=color, s=5, label=f"Crack {crack_label}")
+            
 
     plt.xticks([])
     plt.yticks([])
