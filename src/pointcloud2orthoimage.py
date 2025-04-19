@@ -327,12 +327,13 @@ def main2(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_a
             points_r[:,2]=points_r[:,2]*-1
             points_r[:,1]=points_r[:,1]*-1
             pcd_r.points=o3d.utility.Vector3dVector(points_r)
-            o3d.visualization.draw_geometries([pcd_r,axis_mesh],window_name='Flipped_Sidewalk '+pointName,width=1920//3*2,height=1080//3*2)  # if only show red box, then the green box is been covered. then the results is correct.
-            bool_confirm=input('Confirm the filp? y/n:')
-            if  not bool_confirm in ['y',"Y"]:
-                print('Discard filp')
-                pcd_r=copy.deepcopy(back_pcd_r)
-                bool_confirm=True
+            # THIS SHOWED THE WINDOW OF A POINTCLOUD IMAGE
+            # o3d.visualization.draw_geometries([pcd_r,axis_mesh],window_name='Flipped_Sidewalk '+pointName,width=1920//3*2,height=1080//3*2)  # if only show red box, then the green box is been covered. then the results is correct.
+            # bool_confirm=input('Confirm the filp? y/n:')
+            # if  not bool_confirm in ['y',"Y"]:
+            #     print('Discard filp')
+            #     pcd_r=copy.deepcopy(back_pcd_r)
+            #     bool_confirm=True
         obb_r=pcd_r.get_oriented_bounding_box()
         #obb_r.color=(0,1,0)  #obbBounding box is green
         center_xy=np.array(obb_r.center)
@@ -344,8 +345,8 @@ def main2(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_a
         obb_t.color=(0,1,0)  #obbBounding box is green
         print(aabb)
         print(obb_t)
-        if bool_confirm==False:
-            o3d.visualization.draw_geometries([pcd_t,aabb,obb_t,axis_mesh],window_name='Tanslated_Sidewalk '+pointName,width=1920//3*2,height=1080//3*2)  # if only show red box, then the green box is been covered. then the results is correct.
+        # if bool_confirm==False:
+        #     o3d.visualization.draw_geometries([pcd_t,aabb,obb_t,axis_mesh],window_name='Tanslated_Sidewalk '+pointName,width=1920//3*2,height=1080//3*2)  # if only show red box, then the green box is been covered. then the results is correct.
 
         if bool_alignOnly and bool_generate:
             print('[Start]---/...')
@@ -391,7 +392,7 @@ def main2(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_a
 
 #-------
 def p2o_main(pointcloud_file_path):
-    fileNumber = 47
+    fileNumber = 0
     fileNumber += 1
     pcFolderPath = pointcloud_file_path # Enter your path here ! :D
     print(pcFolderPath)
