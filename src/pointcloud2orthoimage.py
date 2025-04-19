@@ -20,6 +20,8 @@ import matplotlib.pyplot as plt # 3.3.4
 from itertools import repeat
 from multiprocessing import get_context, Process as BaseProcess
 from multiprocessing.pool import Pool
+import open3d as o3d
+import os
 
 class NoDaemonProcess(BaseProcess):
     def __init__(self, *args, **kwargs):
@@ -391,37 +393,41 @@ def main2(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_a
         gc.collect()
 
 #-------
-def p2o_main(pointcloud_file_path):
-    fileNumber = 0
-    fileNumber += 1
-    pcFolderPath = pointcloud_file_path # Enter your path here ! :D
-    print(pcFolderPath)
-    while os.path.exists(pcFolderPath + 'sidewalk_' + str(fileNumber) + '.las'):
-        print("hello")
-        if os.path.exists(pcFolderPath + 'Demo/sidewalk_' + str(fileNumber)) or os.path.exists(pcFolderPath + 'measured_sidewalks/sidewalk_' + str(fileNumber)):
-            fileNumber += 1
-            continue
-        if os.path.exists('C:/'):
-            glb_file_path = pcFolderPath  # screenshot saving path
-            b='win'
-            cpu=3
-            import open3d as o3d
-        elif os.path.exists('/Users/'):
-            glb_file_path = pcFolderPath
-            b = 'mac'
-            cpu = 4
-            import open3d as o3d
-        elif os.path.exists('/data/'):
-            glb_file_path=pcFolderPath  # screenshot saving path
-            b='server'
-            cpu=4
+import os
 
-        fileName = 'sidewalk_' + str(fileNumber)
-        if b=='win':
-            PC_Name=[fileName]
-            #PC_Name.reverse()
-            for i in PC_Name:
-                main2(pointName=i,glb_file_path=glb_file_path,GSDmm2px=5,bool_alignOnly=0,b=b,bool_generate=0)
+def p2o_main(pointcloud_file_path):
+
+    pcFolderPath = pointcloud_file_path  # this file is passed by the function in main.py. It's the path of sidewalk folders
+    # The set up the folder should be you have a pointcloud folder that holds .las files inside. 
+    # It will also hold another folder that has the elevation, orthoimages
+    # Finally, once processed for vertical displacement, the folder will be moved to measured_sidewalks folder
+
+    las_files = [f for f in os.listdir(pcFolderPath) if f.endswith('.las') and os.path.isfile(os.path.join(pcFolderPath, f))]
+
+    # Environment/platform setup
+    if os.path.exists('C:/'):
+        b = 'win'
+        cpu = 3
+        import open3d as o3d
+    elif os.path.exists('/Users/'):
+        b = 'mac'
+        cpu = 4
+        import open3d as o3d
+    elif os.path.exists('/data/'):
+        b = 'server'
+        cpu = 4
+
+    for las_file in las_files:
+        fileName = os.path.splitext(las_file)[0]  
+        
+        # Skip if it's already processed
+        if os.path.exists(os.path.join(pcFolderPath, 'Demo', fileName)) or \
+           os.path.exists(os.path.join(pcFolderPath, 'measured_sidewalks', fileName)):
+            continue
+
+        glb_file_path = pcFolderPath  # screenshot saving path
+
+        if b == 'win':
+            main2(pointName=fileName, glb_file_path=glb_file_path, GSDmm2px=5, bool_alignOnly=0, b=b, bool_generate=0)
         else:
-            main2(pointName=fileName,glb_file_path=glb_file_path,GSDmm2px=5,bool_alignOnly=False,b=b)# centOS cannot run open3D
-        fileNumber += 1
+            main2(pointName=fileName, glb_file_path=glb_file_path, GSDmm2px=5, bool_alignOnly=False, b=b)

@@ -110,7 +110,7 @@ if __name__ == "__main__":
     base_path = "/Users/jose/pointcloud_files/" # only change thiss
     p2o_main(base_path)
     base_path = os.path.join(base_path, "Demo")
-    print(base_path)
+    
     # Get all folder names inside base_path (only directories)
     all_folders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
 
