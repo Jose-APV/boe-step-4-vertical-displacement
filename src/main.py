@@ -11,6 +11,7 @@ from unet import process_segmentation, test_model
 from resize_dem_and_ortho import split_dem_image
 from resize_dem_and_ortho import split_testing_images
 from reassemble_labeledRGB_images import reassemble_image
+from pointcloud2orthoimage import p2o_main
 
 from PIL import Image
 import os
@@ -30,7 +31,7 @@ def get_image_dimensions(image_path):
 
 
 def main(base_path,sidewalk_name):
-    
+   
     # Necessary Paths
     # change this to the desired sidewalk
     sidewalk_path = os.path.join(base_path, sidewalk_name) # make your sidewalk structure similar to this
@@ -105,8 +106,11 @@ def main(base_path,sidewalk_name):
     
 # Run this entire program by running python main.py 
 if __name__ == "__main__":
-    base_path = "/Users/jose/pointcloud_files/Demo" # only change thiss
-
+    
+    base_path = "/Users/jose/pointcloud_files/" # only change thiss
+    p2o_main(base_path)
+    base_path = os.path.join(base_path, "Demo")
+    print(base_path)
     # Get all folder names inside base_path (only directories)
     all_folders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
 

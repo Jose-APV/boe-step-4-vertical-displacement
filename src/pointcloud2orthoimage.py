@@ -18,20 +18,29 @@ import pandas as pd # using pandas 1.15.5
 import matplotlib.pyplot as plt # 3.3.4
 #%matplotlib inline
 from itertools import repeat
-from multiprocessing import Process
-from multiprocessing import pool
+from multiprocessing import get_context, Process as BaseProcess
+from multiprocessing.pool import Pool
 
+class NoDaemonProcess(BaseProcess):
+    def __init__(self, *args, **kwargs):
+        # Force the first arg (group) to be None
+        args = (None,) + args[1:] if len(args) > 0 else args
+        kwargs.pop('group', None)
+        super().__init__(*args, **kwargs)
 
-class NoDaemonProcess(Process):
-    # make 'daemon' attribute always return False
     def _get_daemon(self):
         return False
+
     def _set_daemon(self, value):
         pass
+
     daemon = property(_get_daemon, _set_daemon)
-# We sub-class multiprocessing.pool.Pool instead of multiprocessing.Pool
-# because the latter is only a wrapper function, not a proper class.
-class MyPool(pool.Pool):
+
+class MyPool(Pool):
+    def __init__(self, *args, **kwargs):
+        ctx = get_context("spawn")
+        super().__init__(*args, context=ctx, **kwargs)
+
     Process = NoDaemonProcess
 def rotate(img,angle):
     h, w =img.shape[0:2]
@@ -179,19 +188,19 @@ def PointCloud2Orthoimage2(points,colors,downsample=10,GSDmm2px=5):
         del grid_B,grid_G,grid_R,grid_RGB,grid_ele,grid_Mutiple,EleRGB,X,Y,Z,R,G,B,pool,points,colors
 
 def preparedata(point_cloud):
-    import pptk
+    #import pptk
     points = np.vstack((point_cloud.x, point_cloud.z,point_cloud.y)).transpose()
     colors = np.vstack((point_cloud.red, point_cloud.green,point_cloud.blue)).transpose()
     normals=0#pptk.estimate_normals(points,k=6,r=np.inf)
     #normals = np.vstack((point_cloud.normalx, point_cloud.normaly,point_cloud.normalz)).transpose()
     return point_cloud,points,colors,normals
-def pptkviz(points,colors):
-    import pptk
-    v = pptk.viewer(points)
-    v.attributes(colors/65535)
-    v.set(point_size=0.001,bg_color= [0,0,0,0],show_axis=0,
-    show_grid=0)
-    return v
+# def pptkviz(points,colors):
+#     #import pptk
+#     v = pptk.viewer(points)
+#     v.attributes(colors/65535)
+#     v.set(point_size=0.001,bg_color= [0,0,0,0],show_axis=0,
+#     show_grid=0)
+#     return v
 def cameraSelector(v):
     camera=[]
     camera.append(v.get('eye'))
@@ -199,14 +208,14 @@ def cameraSelector(v):
     camera.append(v.get('theta'))
     camera.append(v.get('r'))
     return np.concatenate(camera).tolist()
-def computePCFeatures(points, colors, knn=10, radius=np.inf):
-    import pptk
-    normals=pptk.estimate_normals(points,knn,radius)
-    idx_ground=np.where(points[...,2]>np.min(points[...,2]+0.3))
-    idx_normals=np.where(abs(normals[...,2])<0.9)
-    idx_wronglyfiltered=np.setdiff1d(idx_ground, idx_normals)
-    common_filtering=np.append(idx_normals, idx_wronglyfiltered)
-    return points[common_filtering],colors[common_filtering]
+# def computePCFeatures(points, colors, knn=10, radius=np.inf):
+#     #import pptk
+#     normals=pptk.estimate_normals(points,knn,radius)
+#     idx_ground=np.where(points[...,2]>np.min(points[...,2]+0.3))
+#     idx_normals=np.where(abs(normals[...,2])<0.9)
+#     idx_wronglyfiltered=np.setdiff1d(idx_ground, idx_normals)
+#     common_filtering=np.append(idx_normals, idx_wronglyfiltered)
+#     return points[common_filtering],colors[common_filtering]
 def vector_angle(u, v):
     return np.arccos(np.dot(u,v) / (np.linalg.norm(u)* np.linalg.norm(v)))
 
@@ -257,11 +266,11 @@ def align_sidewalk_surface(pcd,bool_visualize=False,bool_repeate=True,dist_thres
         finally:
             del pcd,downpcd
 
-def main(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_alignOnly=False,b='win',bool_generate=False):
+def main2(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_alignOnly=False,b='win',bool_generate=False):
     print('$',pointName)
     bool_confirm=False
     if b=='win' or b =='mac':
-        import pptk
+        #import pptk
         import open3d as o3d
         axis_mesh=o3d.geometry.TriangleMesh.create_coordinate_frame()  #o3d.geometry.TriangleMesh.create_mesh_coordinate_frame(size=5.0,origin=np.array([0.,0.,0.]))
         PCD=laspy.read(glb_file_path+pointName+".las")
@@ -382,10 +391,12 @@ def main(glb_file_path,pointName='5mm_18_34_56',downsample=10,GSDmm2px=5,bool_al
 
 #-------
 def p2o_main(pointcloud_file_path):
-    fileNumber = 0
+    fileNumber = 47
     fileNumber += 1
-    pcFolderPath = '/Users/jose/pointcloud_files/' # Enter your path here ! :D
+    pcFolderPath = pointcloud_file_path # Enter your path here ! :D
+    print(pcFolderPath)
     while os.path.exists(pcFolderPath + 'sidewalk_' + str(fileNumber) + '.las'):
+        print("hello")
         if os.path.exists(pcFolderPath + 'Demo/sidewalk_' + str(fileNumber)) or os.path.exists(pcFolderPath + 'measured_sidewalks/sidewalk_' + str(fileNumber)):
             fileNumber += 1
             continue
@@ -409,7 +420,7 @@ def p2o_main(pointcloud_file_path):
             PC_Name=[fileName]
             #PC_Name.reverse()
             for i in PC_Name:
-                main(pointName=i,glb_file_path=glb_file_path,GSDmm2px=5,bool_alignOnly=0,b=b,bool_generate=0)
+                main2(pointName=i,glb_file_path=glb_file_path,GSDmm2px=5,bool_alignOnly=0,b=b,bool_generate=0)
         else:
-            main(pointName=fileName,glb_file_path=glb_file_path,GSDmm2px=5,bool_alignOnly=False,b=b)# centOS cannot run open3D
+            main2(pointName=fileName,glb_file_path=glb_file_path,GSDmm2px=5,bool_alignOnly=False,b=b)# centOS cannot run open3D
         fileNumber += 1
