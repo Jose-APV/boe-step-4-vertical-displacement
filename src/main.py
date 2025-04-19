@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import shutil
 
+from elevation2csv import convert_all_dem_images
 from vertical_displacement import compute_vertical_displacement, vertical_displacement_looping
 from visualize_results import visualize_looping, visualize_vertical_displacement
 from segmentation2binarymask import convert_all_masks, image_to_csv
@@ -10,6 +11,7 @@ from unet import process_segmentation, test_model
 from resize_dem_and_ortho import split_dem_image
 from resize_dem_and_ortho import split_testing_images
 from reassemble_labeledRGB_images import reassemble_image
+from pointcloud2orthoimage import p2o_main
 
 from PIL import Image
 import os
@@ -29,7 +31,7 @@ def get_image_dimensions(image_path):
 
 
 def main(base_path,sidewalk_name):
-    
+   
     # Necessary Paths
     # change this to the desired sidewalk
     sidewalk_path = os.path.join(base_path, sidewalk_name) # make your sidewalk structure similar to this
@@ -87,6 +89,9 @@ def main(base_path,sidewalk_name):
     # should visualize all images and stick them togther
     visualize_looping(resized_rgb_path, binary_mask_csv_path, vertical_displacement_csv, results_path)
 
+    elevation_csv = sidewalk_path + "/elevation_data"
+    convert_all_dem_images(resized_dem_path, elevation_csv)
+
 
     image_path = sidewalk_path + "/" + sidewalk_name + "RGB.jpg"  # Replace with your specific image file path
     width, height = get_image_dimensions(image_path)
@@ -101,8 +106,11 @@ def main(base_path,sidewalk_name):
     
 # Run this entire program by running python main.py 
 if __name__ == "__main__":
-    base_path = "/Users/jose/pointcloud_files/Demo" # only change thiss
-
+    
+    base_path = "/Users/jose/pointcloud_files/" # only change thiss
+    p2o_main(base_path)
+    base_path = os.path.join(base_path, "Demo")
+    
     # Get all folder names inside base_path (only directories)
     all_folders = [f for f in os.listdir(base_path) if os.path.isdir(os.path.join(base_path, f))]
 
