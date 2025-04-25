@@ -23,3 +23,10 @@ Not Recommended but up to experimentation: You may use newer version of Tensorfl
 - Tensorflow 2.12
 - Keras 2.12
 
+
+If not using Anaconda, create virtual environment using the following commands:
+1. First ensure that you have python 3.10 installed
+2. Create a virtual environment using: python3.10 -m venv venv
+3. Run this command to activate: source venv/bin/activate
+4. Change the pointcloud file path in main
+5. Do python main.py to execute
