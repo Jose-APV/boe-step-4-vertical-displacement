@@ -43,27 +43,24 @@ def main(base_path,sidewalk_name):
     labeled_rgb_with_measurements_path = os.path.join(results_path, "labeled_rgb") # a folder path containing all the cut RGB pictures with elevation measurements edited
     os.makedirs(labeled_rgb_with_measurements_path, exist_ok=True)
 
-    # 2am things
     original_dem_path = sidewalk_path + "/" + sidewalk_name +"DEM.jpg"
-    original_RGB_path = sidewalk_path + "/" + sidewalk_name +"RGB.jpg"  # Path to the image you want to test
+    original_RGB_path = sidewalk_path + "/" + sidewalk_name +"RGB.jpg"
 
     sidewalk_output_folder_rgb = sidewalk_path + "/resized_rgb/" # for rgb
     sidewalk_output_folder_dem = sidewalk_path + "/resized_dem/" # for dem
 
     pretrained_model_path = '../unet_membrane.hdf5'
 
-    # loop through rgb and dem images, name them by 12345
-    resized_rgb_path = sidewalk_output_folder_rgb
+
+    resized_rgb_path = sidewalk_output_folder_rgb # Don't enter original RGB path
     resized_dem_path = sidewalk_output_folder_dem # Don't enter original DEM path
 
-    # also this, need to save the predicted image by numbers, predicted_{counter} + png
-    predicted_seg_label_path = sidewalk_path + "/labeled_prediction/" # Need better naming for this
 
+    predicted_seg_label_path = sidewalk_path + "/labeled_prediction/"
 
-    # also this, need multiple csv files, naming should follow 12345
     binary_mask_csv_path = results_path  # Binary mask CSV
 
-    # same here, naming follow 12345
+
     vertical_displacement_csv = results_path # displacement table aka results but in a table
     img_size = 256  # Set the image size to match the model input
 
@@ -93,7 +90,7 @@ def main(base_path,sidewalk_name):
     convert_all_dem_images(resized_dem_path, elevation_csv)
 
 
-    image_path = sidewalk_path + "/" + sidewalk_name + "RGB.jpg"  # Replace with your specific image file path
+    image_path = sidewalk_path + "/" + sidewalk_name + "RGB.jpg"
     width, height = get_image_dimensions(image_path)
     print(f"Width: {width}, Height: {height}")
     reassemble_image(labeled_rgb_with_measurements_path, results_path, width, height)
@@ -107,7 +104,7 @@ def main(base_path,sidewalk_name):
 # Run this entire program by running python main.py 
 if __name__ == "__main__":
     
-    base_path = "/Users/jose/pointcloud_files/" # only change thiss
+    base_path = "/Users/jose/pointcloud_files/" # only change this
     p2o_main(base_path)
     base_path = os.path.join(base_path, "Demo")
     

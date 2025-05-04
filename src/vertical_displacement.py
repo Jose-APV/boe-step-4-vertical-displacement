@@ -20,7 +20,7 @@ def compute_vertical_displacement(predicted_path, dem_path, csv_path, output_csv
 
     # Normalize DEM elevation values (convert pixel values to real-world meters)
     min_elevation = 0  # Minimum real-world elevation (meters)
-    max_elevation = 0.0254  # Maximum real-world elevation (meters, 4 inches)
+    max_elevation = 0.0254  # Maximum real-world elevation (meters, 1 inches)
     elevation_data = (dem_array / 255) * (max_elevation - min_elevation) + min_elevation
 
     # Load CSV mask (binary joint mask, 1 = joint, 0 = background)
@@ -30,7 +30,7 @@ def compute_vertical_displacement(predicted_path, dem_path, csv_path, output_csv
     if predicted_array.shape != elevation_data.shape or predicted_array.shape != csv_data.shape:
         raise ValueError("Image and CSV dimensions do not match!")
 
-    # Step 1: Use connected component labeling to group adjacent 1s into cracks
+    # Use connected component labeling to group adjacent 1s into cracks
     labeled_array, num_features = label(csv_data)  # Find connected regions of 1s (cracks)
 
     # List to store vertical displacement for each crack

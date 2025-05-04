@@ -4,7 +4,6 @@ from PIL import Image
 
 def split_dem_image(input_image_path, output_folder, patch_size=256):
     """Splits a single DEM image into 256x256 patches and stores them in the same folder."""
-    
     os.makedirs(output_folder, exist_ok=True)
 
     patch_idx = 0  # Ensure consistent numbering

@@ -92,7 +92,7 @@ def visualize_vertical_displacement(rgb_path, csv_path, displacement_csv_path, r
     temp_img = Image.open(temp_path)
 
     # Crop off any potential border \
-    temp_img = ImageOps.crop(temp_img, border=1)  # Adjust this if necessary
+    temp_img = ImageOps.crop(temp_img, border=1)
 
     # Resize the image to 256x256
     temp_img = temp_img.resize((256, 256), Image.Resampling.LANCZOS)
@@ -114,7 +114,7 @@ def visualize_looping(dem_folder, csv_folder, displacement_folder, results_folde
 
     # Loop through all displacement CSV files
     for disp_filename in sorted(os.listdir(displacement_folder)):
-        if disp_filename.endswith("VERT_DISP.csv"):  # Adjust file extension if needed
+        if disp_filename.endswith("VERT_DISP.csv"):
             displacement_csv_path = os.path.join(displacement_folder, disp_filename)
 
             # Generate corresponding file paths
